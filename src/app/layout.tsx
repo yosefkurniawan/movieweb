@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ThemeRegistry from "@/components/ThemeRegistry/ThemeRegistry";
 import QueryProvider from "@/lib/providers/QueryProvider";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +31,13 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ThemeRegistry>
           <QueryProvider>
+            {/* Header */}
+            <Header />
+            
             {children}
+            
+            {/* Footer */}
+            <Footer />
           </QueryProvider>
         </ThemeRegistry>
       </body>
