@@ -1,17 +1,29 @@
 import Image from "next/image";
 import styles from "./page.module.css";
-import { Button, Typography } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
+import MovieList from "@/components/MovieList";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Typography variant="h1">Hello World</Typography>
-        <Button variant="contained">Get Started</Button>
-      </main>
-      <footer className={styles.footer}>
-        <Typography variant="body1">&copy; {new Date().getFullYear()} MovieWeb</Typography>
-      </footer>
-    </div>
+    <Box>
+      {/* Hero Section */}
+      <Box
+        sx={{
+          bgcolor: 'primary.main',
+          color: 'primary.contrastText',
+          py: 8,
+          mb: 4
+        }}
+      >
+        <Container maxWidth="lg">
+          <Typography variant="h2" component="h1" gutterBottom>
+            Welcome to MovieWeb
+          </Typography>
+        </Container>
+      </Box>
+      
+      {/* Movie List Section */}
+      <MovieList />
+    </Box>
   );
 }
