@@ -58,6 +58,13 @@ export interface TrendingResponse {
   total_results: number;
 }
 
+export interface MultiResponse {
+  page: number;
+  results: MediaItem[];
+  total_pages: number;
+  total_results: number;
+}
+
 // Helper function to handle API requests
 async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${BASE_URL}${endpoint}`;
@@ -114,6 +121,16 @@ export const fetchMovieDetails = async (id: number) => {
 // Search Movies
 export const searchMovies = async (query: string, page = 1): Promise<MovieResponse> => {
   return apiRequest<MovieResponse>(`/search/movie?query=${encodeURIComponent(query)}&page=${page}`);
+};
+
+// Search TV Shows
+export const searchTVShows = async (query: string, page = 1): Promise<TVShowResponse> => {
+  return apiRequest<TVShowResponse>(`/search/tv?query=${encodeURIComponent(query)}&page=${page}`);
+};
+
+// Search Multi (movies, TV shows)
+export const searchMulti = async (query: string, page = 1): Promise<TrendingResponse> => {
+  return apiRequest<TrendingResponse>(`/search/multi?query=${encodeURIComponent(query)}&page=${page}`);
 };
 
 // Helper function to get full image URL

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   AppBar, 
   Toolbar, 
@@ -22,7 +22,8 @@ import {
 import { alpha, styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import Link from 'next/link';
-import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
+import { debounce } from '@/lib/utils/debounce';
 import LiveTvRoundedIcon from '@mui/icons-material/LiveTvRounded';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -61,9 +62,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      width: '12ch',
+      width: '250px',
       '&:focus': {
-        width: '20ch',
+        width: '300px',
       },
     },
     [theme.breakpoints.down('sm')]: {
@@ -92,9 +93,12 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [userData, setUserData] = useState<UserData | null>(null);
   
   const theme = useTheme();
+  const router = useRouter();
+  const pathname = usePathname();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   useEffect(() => {
@@ -138,6 +142,23 @@ export default function Header() {
     setDrawerOpen(open);
   };
 
+  // Create debounced search handler
+  const debouncedSearch = useCallback(
+    debounce((query: string) => {
+      if (query && query.trim().length > 0) {
+        router.push(`/search?q=${encodeURIComponent(query)}`);
+      }
+    }, 500),
+    [router]
+  );
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    debouncedSearch(query);
+  };
+
   const handleSearchClick = () => {
     if (isMobile) {
       setSearchActive(true);
@@ -146,7 +167,15 @@ export default function Header() {
 
   const handleSearchClose = () => {
     setSearchActive(false);
+    setSearchQuery('');
   };
+  
+  // Clear search when navigating away from search page
+  useEffect(() => {
+    if (!pathname.includes('/search')) {
+      setSearchQuery('');
+    }
+  }, [pathname]);
 
   const drawerContent = (
     <Box
@@ -205,7 +234,7 @@ export default function Header() {
           <Toolbar disableGutters sx={{ justifyContent: { xs: 'space-between', sm: 'flex-start' } }}>
             {/* Left Section - Burger Menu (Mobile Only) */}
             {!searchActive ? (
-              <Box sx={{ display: { xs: 'flex', sm: 'none' }, alignItems: 'center', width: { xs: '33%', sm: 'auto' } }}>
+              <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', width: { xs: '33%', sm: 'auto' } }}>
                 <IconButton
                   size="large"
                   edge="start"
@@ -226,7 +255,7 @@ export default function Header() {
                 sx={{ 
                   display: 'flex', 
                   justifyContent: { xs: 'center', sm: 'flex-start' },
-                  width: { xs: '33%', sm: 'auto' }
+                  width: { xs: '33%', md: 'auto' }
                 }}
               >
                 <Link href="/" passHref>
@@ -306,9 +335,11 @@ export default function Header() {
                         <SearchIcon />
                       </SearchIconWrapper>
                       <StyledInputBase
-                        placeholder="Search…"
+                        placeholder="Search movies, TV shows..."
                         inputProps={{ 'aria-label': 'search' }}
                         autoFocus={searchActive}
+                        value={searchQuery || ''}
+                        onChange={handleSearchChange}
                       />
                       <IconButton 
                         size="small" 
@@ -323,7 +354,7 @@ export default function Header() {
 
               {/* User - Hidden on small mobile and when search is active */}
               {!searchActive && (
-                <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}>
+                <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
                   <Link href={userData ? '/account' : '/login'} passHref>
                     <IconButton size="large" aria-label="account of current user">
                       <AccountCircleOutlinedIcon sx={{ color: '#fff' }}/>
