@@ -80,14 +80,36 @@ const NavLink = styled(Typography)(({ theme }) => ({
     color: alpha(theme.palette.common.white, 0.7),
   },
 }));
+interface UserData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  gender?: string;
+}
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  
+  useEffect(() => {
+    // Access localStorage only on the client side
+    const currentUser = localStorage.getItem('currentUser');
+    
+    if (currentUser) {
+      try {
+        const parsedUser = JSON.parse(currentUser);
+        setUserData(parsedUser);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -302,7 +324,7 @@ export default function Header() {
               {/* User - Hidden on small mobile and when search is active */}
               {!searchActive && (
                 <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}>
-                  <Link href={currentUser ? '/account' : '/login'} passHref>
+                  <Link href={userData ? '/account' : '/login'} passHref>
                     <IconButton size="large" aria-label="account of current user">
                       <AccountCircleOutlinedIcon sx={{ color: '#fff' }}/>
                     </IconButton>
