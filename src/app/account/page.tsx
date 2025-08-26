@@ -399,7 +399,7 @@ export default function AccountPage() {
           <Button 
             onClick={confirmLogout} 
             variant="contained"
-            id="confirm-logout-button"
+            data-testid="confirm-logout-button"
             sx={{ 
               backgroundColor: '#E50914',
               '&:hover': {
