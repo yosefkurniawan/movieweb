@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { getImageUrl } from '@/lib/api/tmdb';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import MoviePlaceholder from './MoviePlaceholder';
 
 // Styled components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -110,16 +111,18 @@ export default function MovieCard({
     <Link href={linkHref} passHref style={{ textDecoration: 'none' }}>
       <StyledCard>
         <Box sx={{ position: 'relative' }}>
-          <CardMedia
-            component="img"
-            sx={{ height: { xs: !isLandscape ? 350 : 250, md: !isLandscape ? 400 : 300 } }}
-            image={
-              !isLandscape ? 
-                posterPath ? getImageUrl(posterPath) : '/placeholder.jpg' : 
-                backdrop_path ? getImageUrl(backdrop_path) : '/placeholder.jpg'
-            }
-            alt={title}
-          />
+          {((!isLandscape && posterPath) || (isLandscape && backdrop_path)) ? (
+            <CardMedia
+              component="img"
+              sx={{ height: { xs: !isLandscape ? 350 : 250, md: !isLandscape ? 400 : 300 } }}
+              image={!isLandscape ? getImageUrl(posterPath!) : getImageUrl(backdrop_path!)}
+              alt={title}
+            />
+          ) : (
+            <Box sx={{ height: { xs: !isLandscape ? 350 : 250, md: !isLandscape ? 400 : 300 } }}>
+              <MoviePlaceholder isLandscape={isLandscape} mediaType={mediaType} />
+            </Box>
+          )}
           {voteAverage > 0 && (
             <RatingBadge sx={{ color: voteAverage > 8 ? 'success.main' : voteAverage > 6 ? 'warning.main' : '#fff' }}>
               {voteAverage.toFixed(1)}
