@@ -89,6 +89,12 @@ interface UserData {
   gender?: string;
 }
 
+// Add display names to styled components
+Search.displayName = 'Search';
+SearchIconWrapper.displayName = 'SearchIconWrapper';
+StyledInputBase.displayName = 'StyledInputBase';
+NavLink.displayName = 'NavLink';
+
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -143,14 +149,14 @@ export default function Header() {
   };
 
   // Create debounced search handler
-  const debouncedSearch = useCallback(
-    debounce((query: string) => {
-      if (query && query.trim().length > 0) {
-        router.push(`/search?q=${encodeURIComponent(query)}`);
+  const debouncedSearch = useCallback((query: string) => {
+    const debouncedFn = debounce((q: string) => {
+      if (q && q.trim().length > 0) {
+        router.push(`/search?q=${encodeURIComponent(q)}`);
       }
-    }, 500),
-    [router]
-  );
+    }, 500);
+    debouncedFn(query);
+  }, [router]);
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

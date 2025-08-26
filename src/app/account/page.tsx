@@ -33,6 +33,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import WcIcon from '@mui/icons-material/Wc';
 import MovieIcon from '@mui/icons-material/Movie';
 import LogoutIcon from '@mui/icons-material/Logout';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useWatchlist } from '@/lib/hooks/useWatchlist';
 import Link from 'next/link';
@@ -301,9 +302,11 @@ export default function AccountPage() {
                       }}>
                         <Box sx={{ width: 100, height: 150, overflow: 'hidden' }}>
                           {item.posterPath ? (
-                            <img 
+                            <Image 
                               src={getImageUrl(item.posterPath)} 
                               alt={item.title} 
+                              width={100}
+                              height={150}
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                             />
                           ) : (

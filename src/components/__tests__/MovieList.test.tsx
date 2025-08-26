@@ -1,18 +1,33 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import MovieList from '../MovieList';
 import { MediaItem } from '@/lib/api/tmdb';
 
+// Define the props interface for MovieCard
+interface MovieCardProps {
+  id: number;
+  title: string;
+  mediaType: string;
+  posterPath?: string;
+  backdrop_path?: string;
+  releaseDate?: string;
+  voteAverage?: number;
+  overview?: string;
+  isLandscape?: boolean;
+}
+
 // Mock the MovieCard component
 jest.mock('../MovieCard', () => {
-  return function MockMovieCard(props: any) {
+  function MockMovieCard(props: MovieCardProps) {
     return (
       <div data-testid={`movie-card-${props.id}`}>
         <div>Title: {props.title}</div>
         <div>Media Type: {props.mediaType}</div>
       </div>
     );
-  };
+  }
+  MockMovieCard.displayName = 'MockMovieCard';
+  return MockMovieCard;
 });
 
 describe('MovieList', () => {

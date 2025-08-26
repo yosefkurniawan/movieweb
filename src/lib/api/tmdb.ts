@@ -219,5 +219,10 @@ export const searchMulti = async (query: string, page = 1): Promise<TrendingResp
 // Helper function to get full image URL
 export const getImageUrl = (path: string | null, size: string = 'w500'): string => {
   if (!path) return 'https://via.placeholder.com/500x750';
-  return `https://image.tmdb.org/t/p/${size}${path}`;
+  
+  // Ensure path starts with a slash
+  const formattedPath = path.startsWith('/') ? path : `/${path}`;
+  
+  // Return the URL without any additional encoding
+  return `https://image.tmdb.org/t/p/${size}${formattedPath}`;
 };

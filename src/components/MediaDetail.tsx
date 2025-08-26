@@ -10,8 +10,6 @@ import {
   Skeleton,
   Rating,
   Button,
-  Divider,
-  Paper,
   Snackbar,
   Alert,
   Dialog,
@@ -20,6 +18,7 @@ import {
   DialogContentText,
   DialogActions
 } from '@mui/material';
+import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 import { Movie, TVShow, Genre } from '@/lib/api/tmdb';
 import { getImageUrl } from '@/lib/api/tmdb';
@@ -49,10 +48,10 @@ const BackdropContainer = styled(Box)(({ theme }) => `
   }
 `);
 
-const BackdropImage = styled('img')({
+const BackdropImage = styled(Box)({
+  position: 'relative',
   width: '100%',
   height: '100%',
-  objectFit: 'cover',
 });
 
 const ContentContainer = styled(Box)(({ theme }) => `
@@ -82,6 +81,13 @@ const InfoContainer = styled(Box)(({ theme }) => `
   justify-content: flex-end;
   padding-bottom: ${theme.spacing(2)};
 `);
+
+// Add display names to styled components
+BackdropContainer.displayName = 'BackdropContainer';
+BackdropImage.displayName = 'BackdropImage';
+ContentContainer.displayName = 'ContentContainer';
+PosterContainer.displayName = 'PosterContainer';
+InfoContainer.displayName = 'InfoContainer';
 
 interface MediaDetailProps {
   data: Movie | TVShow;
@@ -150,10 +156,16 @@ export default function MediaDetail({ data, mediaType, isLoading }: MediaDetailP
       {/* Backdrop */}
       <BackdropContainer>
         {data.backdrop_path ? (
-          <BackdropImage 
-            src={getImageUrl(data.backdrop_path, 'original')} 
-            alt={title}
-          />
+          <BackdropImage>
+            <Image 
+              src={getImageUrl(data.backdrop_path, 'original')}
+              alt={title}
+              fill
+              priority
+              sizes="100vw"
+              style={{ objectFit: 'cover' }}
+            />
+          </BackdropImage>
         ) : (
           <Box sx={{ width: '100%', height: '100%' }}>
             <MoviePlaceholder isLandscape={true} mediaType={mediaType} />
@@ -169,11 +181,15 @@ export default function MediaDetail({ data, mediaType, isLoading }: MediaDetailP
             <Grid item xs={12} sm={4} md={3}>
               <PosterContainer>
                 {data.poster_path ? (
-                  <img 
-                    src={getImageUrl(data.poster_path, 'w500')} 
-                    alt={title}
-                    style={{ width: '100%', height: 'auto' }}
-                  />
+                  <Box sx={{ position: 'relative', width: '100%', aspectRatio: '2/3' }}>
+                    <Image 
+                      src={getImageUrl(data.poster_path, 'w500')}
+                      alt={title}
+                      fill
+                      sizes="(max-width: 600px) 50vw, (max-width: 960px) 33vw, 25vw"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </Box>
                 ) : (
                   <Box sx={{ aspectRatio: '2/3' }}>
                     <MoviePlaceholder mediaType={mediaType} />

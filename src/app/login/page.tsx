@@ -10,7 +10,6 @@ import {
   Paper,
   InputAdornment,
   IconButton,
-  FormHelperText,
   Snackbar,
   Alert
 } from '@mui/material';
@@ -18,6 +17,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Link from 'next/link';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { User } from '@/types/user';
 
 // Validation schema
 const validationSchema = yup.object({
@@ -59,7 +59,7 @@ export default function LoginPage() {
         const users = JSON.parse(usersJson);
         
         // Find user with matching email and password
-        const user = users.find((u: any) => 
+        const user = users.find((u: User) => 
           u.email === values.email && u.password === values.password
         );
         

@@ -4,12 +4,12 @@ import React from 'react';
 import { 
   Card, 
   CardContent, 
-  CardMedia, 
   Typography, 
   Box, 
   Chip,
   Button
 } from '@mui/material';
+import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 import Link from 'next/link';
 import { getImageUrl } from '@/lib/api/tmdb';
@@ -18,7 +18,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import MoviePlaceholder from './MoviePlaceholder';
 
 // Styled components
-const StyledCard = styled(Card)(({ theme }) => ({
+const StyledCard = styled(Card)(() => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
@@ -80,7 +80,13 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
   }
 }));
 
-export interface MovieCardProps {
+// Add display names to styled components
+StyledCard.displayName = 'StyledCard';
+RatingBadge.displayName = 'RatingBadge';
+MediaTypeChip.displayName = 'MediaTypeChip';
+StyledCardContent.displayName = 'StyledCardContent';
+
+interface MovieCardProps {
   id: number;
   title: string;
   posterPath: string | null;
@@ -112,12 +118,16 @@ export default function MovieCard({
       <StyledCard>
         <Box sx={{ position: 'relative' }}>
           {((!isLandscape && posterPath) || (isLandscape && backdrop_path)) ? (
-            <CardMedia
-              component="img"
-              sx={{ height: { xs: !isLandscape ? 350 : 250, md: !isLandscape ? 400 : 300 } }}
-              image={!isLandscape ? getImageUrl(posterPath!) : getImageUrl(backdrop_path!)}
-              alt={title}
-            />
+            <Box sx={{ position: 'relative', height: { xs: !isLandscape ? 350 : 250, md: !isLandscape ? 400 : 300 } }}>
+              <Image
+                src={!isLandscape ? getImageUrl(posterPath!) : getImageUrl(backdrop_path!)}
+                alt={title}
+                fill
+                sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 25vw"
+                style={{ objectFit: 'cover' }}
+                priority={false}
+              />
+            </Box>
           ) : (
             <Box sx={{ height: { xs: !isLandscape ? 350 : 250, md: !isLandscape ? 400 : 300 } }}>
               <MoviePlaceholder isLandscape={isLandscape} mediaType={mediaType} />

@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Container, Grid, Typography, Link as MuiLink } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 
 export default function Footer() {
   return (

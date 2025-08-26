@@ -55,3 +55,5 @@ export function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionCacheProv
 
   return <EmotionCacheProvider value={cache}>{children}</EmotionCacheProvider>;
 }
+
+NextAppDirEmotionCacheProvider.displayName = 'NextAppDirEmotionCacheProvider';

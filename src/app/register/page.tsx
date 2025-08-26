@@ -23,6 +23,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Link from 'next/link';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { User } from '@/types/user';
 
 // Validation schema
 const validationSchema = yup.object({
@@ -85,7 +86,7 @@ export default function RegisterPage() {
         const existingUsers = JSON.parse(usersJson);
         
         // Check if email already exists
-        const emailExists = existingUsers.some((user: any) => user.email === values.email);
+        const emailExists = existingUsers.some((user: User) => user.email === values.email);
         if (emailExists) {
           showAlert('This email is already registered. Please use a different email or login.', 'error');
           return;

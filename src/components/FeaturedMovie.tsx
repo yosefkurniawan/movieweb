@@ -7,6 +7,7 @@ import { useFeaturedMovie } from '@/lib/hooks/useFeaturedMovie';
 import { getImageUrl } from '@/lib/api/tmdb';
 import { MediaItem, Movie, TVShow } from '@/lib/api/tmdb';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 // Type guards
 const isMovie = (item: MediaItem): item is Movie => {
@@ -63,20 +64,23 @@ export default function FeaturedMovie() {
         display: 'flex',
         alignItems: 'center',
         color: 'white',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage: `url(${getImageUrl(isMovie(media) ? media.backdrop_path : (isTVShow(media) ? media.backdrop_path : ''), 'original')})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          zIndex: -1,
-        },
-        '&::after': {
-          content: '""',
+      }}
+    >
+      {/* Backdrop Image */}
+      <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: -2 }}>
+        <Image
+          src={getImageUrl(isMovie(media) ? media.backdrop_path : (isTVShow(media) ? media.backdrop_path : ''), 'original')}
+          alt={title}
+          fill
+          priority
+          sizes="100vw"
+          style={{ objectFit: 'cover' }}
+        />
+      </Box>
+      
+      {/* Gradient Overlay */}
+      <Box 
+        sx={{
           position: 'absolute',
           top: 0,
           left: 0,
@@ -84,9 +88,8 @@ export default function FeaturedMovie() {
           bottom: 0,
           background: 'linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%)',
           zIndex: -1,
-        },
-      }}
-    >
+        }}
+      />
       <Container sx={{ zIndex: 1 }}>
         <Box sx={{ maxWidth: { xs: '100%', md: '50%' } }}>
           <Typography variant="h2" component="h1" gutterBottom fontWeight="bold">

@@ -13,7 +13,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MovieCard from './MovieCard';
-import { MediaItem } from '@/lib/api/tmdb';
+import { MediaItem, MovieItem, TVShowItem } from '@/types/media';
 
 // Styled components
 const ScrollContainer = styled(Box)(({ theme }) => ({
@@ -67,20 +67,25 @@ interface MovieListProps {
   title: string;
   movies?: MediaItem[];
   isLoading: boolean;
-  error?: any;
+  error?: Error | unknown;
   mediaType?: 'movie' | 'tv';
   isLandscape?: boolean;
 }
 
 // Type guard to check if an item is a Movie
-const isMovie = (item: MediaItem): item is import('@/lib/api/tmdb').Movie => {
+const isMovie = (item: MediaItem): item is MovieItem => {
   return 'title' in item && 'release_date' in item;
 };
 
 // Type guard to check if an item is a TVShow
-const isTVShow = (item: MediaItem): item is import('@/lib/api/tmdb').TVShow => {
+const isTVShow = (item: MediaItem): item is TVShowItem => {
   return 'name' in item && 'first_air_date' in item;
 };
+
+// Add display names to styled components
+ScrollContainer.displayName = 'ScrollContainer';
+ScrollButton.displayName = 'ScrollButton';
+CardWrapper.displayName = 'CardWrapper';
 
 export default function MovieList({ 
   title, 

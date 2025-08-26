@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { 
-  Box, 
   Typography, 
   Grid, 
   Container,
@@ -16,6 +15,9 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(3),
   fontWeight: 'bold',
 }));
+
+// Add display name to styled component
+SectionTitle.displayName = 'SectionTitle';
 
 interface RelatedMediaProps {
   items: (Movie | TVShow)[];

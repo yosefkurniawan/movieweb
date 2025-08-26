@@ -19,7 +19,7 @@ declare global {
       toContainElement(element: HTMLElement | null): R;
       toContainHTML(html: string): R;
       toHaveFocus(): R;
-      toHaveFormValues(values: { [name: string]: any }): R;
+      toHaveFormValues(values: { [name: string]: string | number | boolean | string[] }): R;
       toHaveValue(value: string | string[] | number): R;
     }
   }

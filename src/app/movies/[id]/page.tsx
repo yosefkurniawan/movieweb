@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useMovieDetails } from '@/lib/hooks/useMovies';
 import MediaDetail from '@/components/MediaDetail';
 import RelatedMedia from '@/components/RelatedMedia';
-import { Box, Container, Typography, CircularProgress } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 
 export default function MovieDetailPage() {
   const { id } = useParams();

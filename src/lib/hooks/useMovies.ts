@@ -9,8 +9,6 @@ import {
   fetchTopRatedMovies,
   fetchMovieDetails,
   fetchTVShowDetails,
-  Movie,
-  TVShow,
   MovieDetails,
   TVShowDetails
 } from '@/lib/api/tmdb';
