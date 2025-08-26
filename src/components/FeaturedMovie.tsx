@@ -6,6 +6,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useFeaturedMovie } from '@/lib/hooks/useFeaturedMovie';
 import { getImageUrl } from '@/lib/api/tmdb';
 import { MediaItem, Movie, TVShow } from '@/lib/api/tmdb';
+import { useRouter } from 'next/navigation';
 
 // Type guards
 const isMovie = (item: MediaItem): item is Movie => {
@@ -17,6 +18,7 @@ const isTVShow = (item: MediaItem): item is TVShow => {
 };
 
 export default function FeaturedMovie() {
+  const router = useRouter();
   const { data: media, isLoading, error } = useFeaturedMovie();
 
   if (isLoading) {
@@ -121,6 +123,7 @@ export default function FeaturedMovie() {
               size="large" 
               startIcon={<PlayArrowIcon />}
               sx={{ px: 4, py: 1 }}
+              onClick={() => router.push(`/movies/${media.id}`)}
             >
               Play
             </Button>
@@ -130,6 +133,7 @@ export default function FeaturedMovie() {
               size="large" 
               startIcon={<InfoOutlinedIcon />}
               sx={{ px: 4, py: 1 }}
+              onClick={() => router.push(`/movies/${media.id}`)}
             >
               More Info
             </Button>
