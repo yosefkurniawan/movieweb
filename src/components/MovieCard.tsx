@@ -104,7 +104,7 @@ export default function MovieCard({
   isLandscape = false,
 }: MovieCardProps) {
   const releaseYear = releaseDate ? new Date(releaseDate).getFullYear() : '';
-  const linkHref = `/${mediaType}/${id}`;
+  const linkHref = `/${mediaType === 'movie' ? 'movies' : 'tvshows'}/${id}`;
   const mediaTypeLabel = mediaType === 'movie' ? 'Movie' : 'TV';
   
   return (

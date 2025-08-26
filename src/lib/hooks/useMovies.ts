@@ -6,7 +6,13 @@ import {
   fetchPopularTVShows, 
   MovieResponse, 
   TVShowResponse,
-  fetchTopRatedMovies 
+  fetchTopRatedMovies,
+  fetchMovieDetails,
+  fetchTVShowDetails,
+  Movie,
+  TVShow,
+  MovieDetails,
+  TVShowDetails
 } from '@/lib/api/tmdb';
 
 export function useTrendingMovies(page = 1, timeWindow: 'day' | 'week' = 'week') {
@@ -42,4 +48,24 @@ export function useTopRatedMovies(page = 1) {
     queryKey: ['topRatedMovies', page],
     queryFn: () => fetchTopRatedMovies(page),
   }); 
+}
+
+export function useMovieDetails(id: number | string) {
+  const movieId = typeof id === 'string' ? parseInt(id, 10) : id;
+  
+  return useQuery<MovieDetails>({
+    queryKey: ['movieDetails', movieId],
+    queryFn: () => fetchMovieDetails(movieId),
+    enabled: !isNaN(movieId),
+  });
+}
+
+export function useTVShowDetails(id: number | string) {
+  const tvShowId = typeof id === 'string' ? parseInt(id, 10) : id;
+  
+  return useQuery<TVShowDetails>({
+    queryKey: ['tvShowDetails', tvShowId],
+    queryFn: () => fetchTVShowDetails(tvShowId),
+    enabled: !isNaN(tvShowId),
+  });
 }

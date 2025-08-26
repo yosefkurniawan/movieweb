@@ -86,7 +86,7 @@ describe('MovieCard', () => {
     
     // Check if link has correct href
     const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', '/movie/123');
+    expect(link).toHaveAttribute('href', '/movies/123');
   });
 
   it('renders movie card with overview text', () => {
