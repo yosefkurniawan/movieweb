@@ -209,11 +209,10 @@ export default function Header() {
       </List>
       <Divider sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
       <List>
-        <ListItem button>
-          <ListItemText primary="Account" sx={{ color: 'white' }} />
-        </ListItem>
-        <ListItem button>
-          <ListItemText primary="Settings" sx={{ color: 'white' }} />
+        <ListItem>
+          <Link href={userData ? '/account' : '/login'} passHref>
+            <ListItemText primary={userData ? 'Account' : 'Login'} sx={{ color: 'white' }} />
+          </Link>
         </ListItem>
       </List>
     </Box>
