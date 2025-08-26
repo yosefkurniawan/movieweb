@@ -287,7 +287,7 @@ export default function Header() {
                         alignContent: 'center',
                       }}
                     >
-                      Film Favorit
+                      MovieWeb
                     </Typography>
                   </Box>
                 </Link>
