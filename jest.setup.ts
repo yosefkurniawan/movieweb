@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 
+// Mock Next.js router
 jest.mock('next/router', () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -17,6 +18,7 @@ jest.mock('next/router', () => ({
   }),
 }));
 
+// Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -30,6 +32,7 @@ jest.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
+// Set up global afterEach to clean up after each test
 afterEach(() => {
   jest.clearAllMocks();
 });
