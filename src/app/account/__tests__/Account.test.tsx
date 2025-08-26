@@ -153,12 +153,12 @@ describe('AccountPage', () => {
       expect(screen.getByText(/are you sure you want to log out of your account\?/i)).toBeInTheDocument();
     });
     
-    // Find the logout button using id
-    const logoutButton = document.getElementById('confirm-logout-button');
+    // Find the logout button using data-testid
+    const logoutButton = screen.getByTestId('confirm-logout-button');
     
     // Click the logout button in the dialog
     await act(async () => {
-      if (logoutButton) fireEvent.click(logoutButton);
+      fireEvent.click(logoutButton);
     });
     
     // Wait for localStorage to be cleared by the component's confirmLogout function
