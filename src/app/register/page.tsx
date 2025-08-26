@@ -10,41 +10,121 @@ import {
   Paper,
   InputAdornment,
   IconButton,
-  Link as MuiLink,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   Grid,
-  SelectChangeEvent
+  FormHelperText,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Link from 'next/link';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+
+// Validation schema
+const validationSchema = yup.object({
+  firstName: yup
+    .string()
+    .required('First name is required')
+    .min(2, 'First name should be at least 2 characters')
+    .max(50, 'First name should not exceed 50 characters'),
+  lastName: yup
+    .string()
+    .required('Last name is required')
+    .min(2, 'Last name should be at least 2 characters')
+    .max(50, 'Last name should not exceed 50 characters'),
+  email: yup
+    .string()
+    .email('Enter a valid email')
+    .required('Email is required'),
+  password: yup
+    .string()
+    .required('Password is required')
+    .min(8, 'Password should be at least 8 characters')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+    ),
+  gender: yup
+    .string()
+    .required('Please select your gender')
+});
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    gender: ''
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
+
+  const handleCloseAlert = () => {
+    setAlertOpen(false);
+  };
+
+  const showAlert = (message: string, severity: 'success' | 'error') => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      gender: ''
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      try {
+        // Get existing users or initialize empty array
+        const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        
+        // Check if email already exists
+        const emailExists = existingUsers.some((user: any) => user.email === values.email);
+        if (emailExists) {
+          showAlert('This email is already registered. Please use a different email or login.', 'error');
+          return;
+        }
+        
+        const newUser = {
+          id: Date.now().toString(),
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          password: values.password,
+          gender: values.gender,
+          createdAt: new Date().toISOString()
+        };
+        
+        // Save updated users array
+        localStorage.setItem('users', JSON.stringify([...existingUsers, newUser]));
+        
+        // Set current user
+        localStorage.setItem('currentUser', JSON.stringify({
+          id: newUser.id,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          email: newUser.email
+        }));
+        
+        showAlert('Registration successful! Redirecting to account page...', 'success');
+        
+        formik.resetForm();
+        
+        // Redirect after a short delay to allow the user to see the success message
+        setTimeout(() => {
+          window.location.href = '/account';
+        }, 1500);
+      } catch (error) {
+        console.error('Registration error:', error);
+        showAlert('An error occurred during registration. Please try again.', 'error');
+      }
+    },
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
-
-  const handleSelectChange = (e: SelectChangeEvent) => {
-    setFormData({
-      ...formData,
-      gender: e.target.value
-    });
-  };
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -80,7 +160,7 @@ export default function RegisterPage() {
             Sign Up
           </Typography>
 
-          <Box component="form" sx={{ mb: 3 }}>
+          <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mb: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -91,8 +171,14 @@ export default function RegisterPage() {
                   label="First Name"
                   name="firstName"
                   autoComplete="given-name"
-                  value={formData.firstName}
-                  onChange={handleChange}
+                  value={formik.values.firstName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+                  helperText={formik.touched.firstName && formik.errors.firstName}
+                  FormHelperTextProps={{
+                    sx: { color: '#ff6d6d' }
+                  }}
                   sx={{
                     mb: 2,
                     '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
@@ -100,6 +186,7 @@ export default function RegisterPage() {
                       '& fieldset': { borderColor: '#333' },
                       '&:hover fieldset': { borderColor: '#666' },
                       '&.Mui-focused fieldset': { borderColor: '#E50914' },
+                      '&.Mui-error fieldset': { borderColor: '#ff6d6d' },
                     },
                     '& .MuiInputBase-input': { color: '#fff' },
                     backgroundColor: '#333',
@@ -116,8 +203,14 @@ export default function RegisterPage() {
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
-                  value={formData.lastName}
-                  onChange={handleChange}
+                  value={formik.values.lastName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                  helperText={formik.touched.lastName && formik.errors.lastName}
+                  FormHelperTextProps={{
+                    sx: { color: '#ff6d6d' }
+                  }}
                   sx={{
                     mb: 2,
                     '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
@@ -125,6 +218,7 @@ export default function RegisterPage() {
                       '& fieldset': { borderColor: '#333' },
                       '&:hover fieldset': { borderColor: '#666' },
                       '&.Mui-focused fieldset': { borderColor: '#E50914' },
+                      '&.Mui-error fieldset': { borderColor: '#ff6d6d' },
                     },
                     '& .MuiInputBase-input': { color: '#fff' },
                     backgroundColor: '#333',
@@ -142,8 +236,14 @@ export default function RegisterPage() {
               label="Email Address"
               name="email"
               autoComplete="email"
-              value={formData.email}
-              onChange={handleChange}
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+              FormHelperTextProps={{
+                sx: { color: '#ff6d6d' }
+              }}
               sx={{
                 mb: 2,
                 '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
@@ -151,6 +251,7 @@ export default function RegisterPage() {
                   '& fieldset': { borderColor: '#333' },
                   '&:hover fieldset': { borderColor: '#666' },
                   '&.Mui-focused fieldset': { borderColor: '#E50914' },
+                  '&.Mui-error fieldset': { borderColor: '#ff6d6d' },
                 },
                 '& .MuiInputBase-input': { color: '#fff' },
                 backgroundColor: '#333',
@@ -167,8 +268,14 @@ export default function RegisterPage() {
               type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="new-password"
-              value={formData.password}
-              onChange={handleChange}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+              FormHelperTextProps={{
+                sx: { color: '#ff6d6d' }
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -191,6 +298,7 @@ export default function RegisterPage() {
                   '& fieldset': { borderColor: '#333' },
                   '&:hover fieldset': { borderColor: '#666' },
                   '&.Mui-focused fieldset': { borderColor: '#E50914' },
+                  '&.Mui-error fieldset': { borderColor: '#ff6d6d' },
                 },
                 '& .MuiInputBase-input': { color: '#fff' },
                 backgroundColor: '#333',
@@ -200,6 +308,7 @@ export default function RegisterPage() {
 
             <FormControl 
               fullWidth 
+              error={formik.touched.gender && Boolean(formik.errors.gender)}
               sx={{
                 mb: 3,
                 '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
@@ -207,6 +316,7 @@ export default function RegisterPage() {
                   '& fieldset': { borderColor: '#333' },
                   '&:hover fieldset': { borderColor: '#666' },
                   '&.Mui-focused fieldset': { borderColor: '#E50914' },
+                  '&.Mui-error fieldset': { borderColor: '#ff6d6d' },
                 },
                 '& .MuiSelect-select': { color: '#fff' },
                 backgroundColor: '#333',
@@ -217,9 +327,11 @@ export default function RegisterPage() {
               <Select
                 labelId="gender-label"
                 id="gender"
-                value={formData.gender}
+                name="gender"
+                value={formik.values.gender}
                 label="Gender"
-                onChange={handleSelectChange}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 MenuProps={{
                   PaperProps: {
                     sx: {
@@ -234,9 +346,13 @@ export default function RegisterPage() {
                 <MenuItem value="other">Other</MenuItem>
                 <MenuItem value="prefer-not-to-say">Prefer not to say</MenuItem>
               </Select>
+              {formik.touched.gender && formik.errors.gender && (
+                <FormHelperText sx={{ color: '#ff6d6d' }}>{formik.errors.gender}</FormHelperText>
+              )}
             </FormControl>
 
             <Button
+              type="submit"
               fullWidth
               variant="contained"
               sx={{
@@ -257,24 +373,35 @@ export default function RegisterPage() {
               <Typography variant="body2" sx={{ color: '#b3b3b3' }}>
                 Already have an account?
               </Typography>
-              <Link href="/login" passHref>
-                <MuiLink 
-                  underline="hover" 
-                  sx={{ 
+              <Link href="/login" passHref >
+                  <Typography sx={{ 
                     ml: 1, 
                     color: '#fff',
                     '&:hover': {
                       color: '#E50914'
                     }
-                  }}
-                >
-                  Sign in
-                </MuiLink>
+                  }}>Sign in</Typography>
               </Link>
             </Box>
           </Box>
         </Paper>
       </Container>
+      
+      <Snackbar 
+        open={alertOpen} 
+        autoHideDuration={6000} 
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseAlert} 
+          severity={alertSeverity} 
+          variant="filled" 
+          sx={{ width: '100%' }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
