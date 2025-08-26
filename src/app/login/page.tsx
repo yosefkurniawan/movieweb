@@ -10,15 +10,83 @@ import {
   Paper,
   InputAdornment,
   IconButton,
-  Link as MuiLink
+  FormHelperText,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Link from 'next/link';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+
+// Validation schema
+const validationSchema = yup.object({
+  email: yup
+    .string()
+    .email('Enter a valid email')
+    .required('Email is required'),
+  password: yup
+    .string()
+    .required('Password is required')
+});
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
+
+  const handleCloseAlert = () => {
+    setAlertOpen(false);
+  };
+
+  const showAlert = (message: string, severity: 'success' | 'error') => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      try {
+        // Get users from local storage
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        
+        // Find user with matching email and password
+        const user = users.find((u: any) => 
+          u.email === values.email && u.password === values.password
+        );
+        
+        if (user) {
+          // Store current user info (excluding sensitive data like password)
+          localStorage.setItem('currentUser', JSON.stringify({
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email
+          }));
+          
+          showAlert('Login successful! Redirecting to account page...', 'success');
+          
+          // Redirect to account page after a short delay
+          setTimeout(() => {
+            window.location.href = '/account';
+          }, 1500);
+        } else {
+          // Show error for invalid credentials
+          showAlert('Invalid email or password. Please try again.', 'error');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showAlert('An error occurred during login. Please try again.', 'error');
+      }
+    },
+  });
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -54,18 +122,23 @@ export default function LoginPage() {
             Sign In
           </Typography>
 
-          <Box component="form" sx={{ mb: 3 }}>
+          <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mb: 3 }}>
             <TextField
               margin="normal"
-              required
               fullWidth
               id="email"
               label="Email Address"
               name="email"
               autoComplete="email"
               autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+              FormHelperTextProps={{
+                sx: { color: '#ff6d6d' }
+              }}
               sx={{
                 mb: 2,
                 '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.7)' },
@@ -73,6 +146,7 @@ export default function LoginPage() {
                   '& fieldset': { borderColor: '#333' },
                   '&:hover fieldset': { borderColor: '#666' },
                   '&.Mui-focused fieldset': { borderColor: '#E50914' },
+                  '&.Mui-error fieldset': { borderColor: '#ff6d6d' },
                 },
                 '& .MuiInputBase-input': { color: '#fff' },
                 backgroundColor: '#333',
@@ -82,15 +156,20 @@ export default function LoginPage() {
             
             <TextField
               margin="normal"
-              required
               fullWidth
               name="password"
               label="Password"
               type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+              FormHelperTextProps={{
+                sx: { color: '#ff6d6d' }
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -113,6 +192,7 @@ export default function LoginPage() {
                   '& fieldset': { borderColor: '#333' },
                   '&:hover fieldset': { borderColor: '#666' },
                   '&.Mui-focused fieldset': { borderColor: '#E50914' },
+                  '&.Mui-error fieldset': { borderColor: '#ff6d6d' },
                 },
                 '& .MuiInputBase-input': { color: '#fff' },
                 backgroundColor: '#333',
@@ -121,6 +201,7 @@ export default function LoginPage() {
             />
 
             <Button
+              type="submit"
               fullWidth
               variant="contained"
               sx={{
@@ -142,24 +223,18 @@ export default function LoginPage() {
                 <Typography variant="body2" sx={{ color: '#b3b3b3' }}>
                   New to MovieWeb?
                 </Typography>
-                <Link href="/register" passHref>
-                  <MuiLink 
-                    underline="hover" 
-                    sx={{ 
-                      ml: 1, 
-                      color: '#fff',
-                      '&:hover': {
-                        color: '#E50914'
-                      }
-                    }}
-                  >
-                    Sign up now
-                  </MuiLink>
-                </Link>
+                <Link href="/register" passHref >
+                  <Typography sx={{ 
+                    ml: 1, 
+                    color: '#fff',
+                    '&:hover': {
+                      color: '#E50914'
+                    }
+                  }}>Sign up now</Typography>
+              </Link>
               </Box>
               <Link href="#" passHref>
-                <MuiLink 
-                  underline="hover" 
+                <Typography 
                   sx={{ 
                     color: '#b3b3b3',
                     '&:hover': {
@@ -168,12 +243,28 @@ export default function LoginPage() {
                   }}
                 >
                   Need help?
-                </MuiLink>
+                </Typography>
               </Link>
             </Box>
           </Box>
         </Paper>
       </Container>
+      
+      <Snackbar 
+        open={alertOpen} 
+        autoHideDuration={6000} 
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseAlert} 
+          severity={alertSeverity} 
+          variant="filled" 
+          sx={{ width: '100%' }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
