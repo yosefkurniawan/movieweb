@@ -12,6 +12,15 @@ const theme = createTheme({
     error: {
       main: '#d32f2f',
     },
+    warning: {
+      main: '#ffeb3b',
+    },
+    info: {
+      main: '#2196f3',
+    },
+    success: {
+      main: '#4caf50',
+    },
     background: {
       default: '#ffffff',
       paper: '#f5f5f5',

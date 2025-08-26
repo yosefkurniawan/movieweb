@@ -1,11 +1,11 @@
 // TMDB API configuration
 const BASE_URL = 'https://api.themoviedb.org/3';
-// const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
 // Default headers for all requests
 const defaultHeaders = {
   'Content-Type': 'application/json',
-  // 'Authorization': `Bearer ${API_KEY}`
+  'Authorization': `Bearer ${API_KEY}`
 };
 
 // Types for API responses
@@ -19,11 +19,41 @@ export interface Movie {
   vote_average: number;
   vote_count: number;
   genre_ids: number[];
+  media_type?: 'movie' | 'tv';
 }
+
+export interface TVShow {
+  id: number;
+  name: string;
+  overview: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  first_air_date: string;
+  vote_average: number;
+  vote_count: number;
+  genre_ids: number[];
+  media_type?: 'movie' | 'tv';
+}
+
+export type MediaItem = Movie | TVShow;
 
 export interface MovieResponse {
   page: number;
   results: Movie[];
+  total_pages: number;
+  total_results: number;
+}
+
+export interface TVShowResponse {
+  page: number;
+  results: TVShow[];
+  total_pages: number;
+  total_results: number;
+}
+
+export interface TrendingResponse {
+  page: number;
+  results: MediaItem[];
   total_pages: number;
   total_results: number;
 }
@@ -45,14 +75,43 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
 }
 
 // API functions
+
+// Trending All
+export const fetchTrendingAll = async (page = 1): Promise<TrendingResponse> => {
+  return apiRequest<TrendingResponse>(`/trending/all/week?page=${page}`);
+};
+
+// Trending Movies
+export const fetchTrendingMovies = async (page = 1, timeWindow: 'day' | 'week' = 'week'): Promise<MovieResponse> => {
+  return apiRequest<MovieResponse>(`/trending/movie/${timeWindow}?page=${page}`);
+};
+
+// Trending TV Shows
+export const fetchTrendingTVShows = async (page = 1, timeWindow: 'day' | 'week' = 'week'): Promise<TVShowResponse> => {
+  return apiRequest<TVShowResponse>(`/trending/tv/${timeWindow}?page=${page}`);
+};
+
+// Popular Movies
 export const fetchPopularMovies = async (page = 1): Promise<MovieResponse> => {
   return apiRequest<MovieResponse>(`/movie/popular?page=${page}`);
 };
 
+// Popular TV Shows
+export const fetchPopularTVShows = async (page = 1): Promise<TVShowResponse> => {
+  return apiRequest<TVShowResponse>(`/tv/popular?page=${page}`);
+};
+
+// Top Rated Movies
+export const fetchTopRatedMovies = async (page = 1): Promise<MovieResponse> => {
+  return apiRequest<MovieResponse>(`/movie/top_rated?page=${page}`);
+};
+
+// Movie Details
 export const fetchMovieDetails = async (id: number) => {
   return apiRequest(`/movie/${id}`);
 };
 
+// Search Movies
 export const searchMovies = async (query: string, page = 1): Promise<MovieResponse> => {
   return apiRequest<MovieResponse>(`/search/movie?query=${encodeURIComponent(query)}&page=${page}`);
 };
