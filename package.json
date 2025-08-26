@@ -9,7 +9,11 @@
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:auth": "jest src/app/(auth|login|register|account)/__tests__",
+    "test:login": "jest src/app/login/__tests__",
+    "test:register": "jest src/app/register/__tests__",
+    "test:account": "jest src/app/account/__tests__"
   },
   "dependencies": {
     "@emotion/react": "^11.11.0",

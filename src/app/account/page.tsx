@@ -293,6 +293,7 @@ export default function AccountPage() {
       <Dialog
         open={logoutDialogOpen}
         onClose={cancelLogout}
+        id="logout-dialog"
         PaperProps={{
           sx: {
             backgroundColor: '#1f1f1f',
@@ -312,6 +313,7 @@ export default function AccountPage() {
         <DialogActions sx={{ p: 2 }}>
           <Button 
             onClick={cancelLogout} 
+            id="cancel-logout-button"
             sx={{ color: '#fff' }}
           >
             Cancel
@@ -319,6 +321,7 @@ export default function AccountPage() {
           <Button 
             onClick={confirmLogout} 
             variant="contained"
+            id="confirm-logout-button"
             sx={{ 
               backgroundColor: '#E50914',
               '&:hover': {
