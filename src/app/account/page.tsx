@@ -22,15 +22,21 @@ import {
   DialogContentText,
   DialogTitle,
   Snackbar,
-  Alert
+  Alert,
+  Chip
 } from '@mui/material';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import WcIcon from '@mui/icons-material/Wc';
 import MovieIcon from '@mui/icons-material/Movie';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useRouter } from 'next/navigation';
+import { useWatchlist } from '@/lib/hooks/useWatchlist';
+import Link from 'next/link';
+import { getImageUrl } from '@/lib/api/tmdb';
 
 // User data interface
 interface UserData {
@@ -48,6 +54,7 @@ export default function AccountPage() {
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
+  const { watchlist, removeFromWatchlist, clearWatchlist, isLoading: watchlistLoading } = useWatchlist();
 
   useEffect(() => {
     // Check if user is logged in
@@ -225,65 +232,136 @@ export default function AccountPage() {
               borderRadius: 2,
               mb: 4
             }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <FavoriteIcon sx={{ color: '#E50914', mr: 1 }} />
-                <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
-                  My Favorites
-                </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <BookmarkIcon sx={{ color: '#E50914', mr: 1 }} />
+                  <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
+                    My Watchlist
+                  </Typography>
+                </Box>
+                {watchlist.length > 0 && (
+                  <Button 
+                    variant="outlined" 
+                    size="small"
+                    startIcon={<DeleteIcon />}
+                    onClick={() => {
+                      clearWatchlist();
+                      showAlert('Watchlist cleared', 'success');
+                    }}
+                    sx={{ 
+                      borderColor: '#E50914',
+                      color: '#E50914',
+                      '&:hover': {
+                        borderColor: '#b2070f',
+                        backgroundColor: 'rgba(229, 9, 20, 0.1)'
+                      }
+                    }}
+                  >
+                    Clear All
+                  </Button>
+                )}
               </Box>
               
               <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.1)', mb: 3 }} />
               
-              {/* Dummy favorite movies */}
-              <Grid container spacing={2}>
-                {[1, 2, 3, 4].map((item) => (
-                  <Grid item xs={12} sm={6} key={item}>
-                    <Card sx={{ 
-                      backgroundColor: '#2a2a2a',
-                      color: '#fff',
-                      display: 'flex',
-                      height: 120
-                    }}>
-                      <Box sx={{ width: 80, height: 120, backgroundColor: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <MovieIcon sx={{ fontSize: 40, color: '#E50914' }} />
-                      </Box>
-                      <CardContent sx={{ flexGrow: 1 }}>
-                        <Typography variant="h6" component="h3" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
-                          Favorite Movie {item}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', mt: 1 }}>
-                          Action, Adventure • 2023
-                        </Typography>
-                        <Box sx={{ display: 'flex', mt: 1 }}>
-                          <Button size="small" sx={{ color: '#E50914', p: 0 }}>
-                            View Details
-                          </Button>
-                          <Button size="small" sx={{ color: '#E50914', p: 0, ml: 2 }}>
-                            Remove
-                          </Button>
+              {watchlistLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                  <Typography>Loading your watchlist...</Typography>
+                </Box>
+              ) : watchlist.length === 0 ? (
+                <Box sx={{ textAlign: 'center', my: 4 }}>
+                  <MovieIcon sx={{ fontSize: 60, color: 'rgba(255,255,255,0.2)', mb: 2 }} />
+                  <Typography variant="h6" gutterBottom>Your watchlist is empty</Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', mb: 2 }}>
+                    Add movies and TV shows to keep track of what you want to watch.
+                  </Typography>
+                  <Button 
+                    variant="contained" 
+                    component={Link} 
+                    href="/"
+                    sx={{ 
+                      backgroundColor: '#E50914',
+                      '&:hover': {
+                        backgroundColor: '#b2070f'
+                      }
+                    }}
+                  >
+                    Browse Movies
+                  </Button>
+                </Box>
+              ) : (
+                <Grid container spacing={2}>
+                  {watchlist.map((item) => (
+                    <Grid item xs={12} sm={6} key={item.id}>
+                      <Card sx={{ 
+                        backgroundColor: '#2a2a2a',
+                        color: '#fff',
+                        display: 'flex',
+                        height: 120
+                      }}>
+                        <Box sx={{ width: 100, height: 150, overflow: 'hidden' }}>
+                          {item.posterPath ? (
+                            <img 
+                              src={getImageUrl(item.posterPath)} 
+                              alt={item.title} 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                            />
+                          ) : (
+                            <Box sx={{ width: '100%', height: '100%', backgroundColor: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <MovieIcon sx={{ fontSize: 40, color: '#E50914' }} />
+                            </Box>
+                          )}
                         </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
+                        <CardContent sx={{ flexGrow: 1, pb: '8px !important' }}>
+                          <Typography variant="h6" component="h3" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 0.5 }}>
+                            {item.title}
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                            <Chip 
+                              label={item.mediaType === 'movie' ? 'Movie' : 'TV Show'} 
+                              size="small" 
+                              sx={{ 
+                                height: 20, 
+                                fontSize: '0.7rem', 
+                                mr: 1,
+                                backgroundColor: '#E50914'
+                              }} 
+                            />
+                            {item.releaseDate && (
+                              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem' }}>
+                                {new Date(item.releaseDate).getFullYear()}
+                              </Typography>
+                            )}
+                          </Box>
+                          <Box sx={{ display: 'flex', mt: 1 }}>
+                            <Button 
+                              size="small" 
+                              startIcon={<VisibilityIcon sx={{ fontSize: '0.9rem' }} />}
+                              component={Link}
+                              href={`/${item.mediaType === 'movie' ? 'movies' : 'tvshows'}/${item.id}`}
+                              sx={{ color: '#E50914', p: 0, fontSize: '0.8rem' }}
+                            >
+                              View
+                            </Button>
+                            <Button 
+                              size="small" 
+                              startIcon={<DeleteIcon sx={{ fontSize: '0.9rem' }} />}
+                              onClick={() => {
+                                removeFromWatchlist(item.id, item.mediaType);
+                                showAlert('Removed from watchlist', 'success');
+                              }}
+                              sx={{ color: '#E50914', p: 0, ml: 2, fontSize: '0.8rem' }}
+                            >
+                              Remove
+                            </Button>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
 
-              <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-                <Button 
-                  variant="outlined" 
-                  color="primary"
-                  sx={{ 
-                    borderColor: '#E50914',
-                    color: '#E50914',
-                    '&:hover': {
-                      borderColor: '#b2070f',
-                      backgroundColor: 'rgba(229, 9, 20, 0.1)'
-                    }
-                  }}
-                >
-                  View All Favorites
-                </Button>
-              </Box>
             </Paper>
           </Grid>
         </Grid>
@@ -339,7 +417,7 @@ export default function AccountPage() {
         open={alertOpen} 
         autoHideDuration={6000} 
         onClose={handleCloseAlert}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert 
           onClose={handleCloseAlert} 

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Box, 
   Container, 
@@ -11,15 +11,24 @@ import {
   Rating,
   Button,
   Divider,
-  Paper
+  Paper,
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Movie, TVShow, Genre } from '@/lib/api/tmdb';
 import { getImageUrl } from '@/lib/api/tmdb';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import AddIcon from '@mui/icons-material/Add';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import RemoveIcon from '@mui/icons-material/Remove';
 import StarIcon from '@mui/icons-material/Star';
+import { useRouter } from 'next/navigation';
+import { useWatchlist } from '@/lib/hooks/useWatchlist';
 import MoviePlaceholder from './MoviePlaceholder';
 
 // Styled components
@@ -81,6 +90,13 @@ interface MediaDetailProps {
 }
 
 export default function MediaDetail({ data, mediaType, isLoading }: MediaDetailProps) {
+  const router = useRouter();
+  const { addToWatchlist, removeFromWatchlist, isInWatchlist, isLoggedIn } = useWatchlist();
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error' | 'info'>('success');
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+
   // Helper function to determine if data is a Movie or TVShow
   const isMovie = (data: Movie | TVShow): data is Movie => {
     return mediaType === 'movie';
@@ -254,13 +270,25 @@ export default function MediaDetail({ data, mediaType, isLoading }: MediaDetailP
                   >
                     Watch Trailer
                   </Button>
-                  <Button 
-                    variant="outlined" 
-                    startIcon={<AddIcon />}
-                    sx={{ borderRadius: 8 }}
-                  >
-                    Add to Watchlist
-                  </Button>
+                  {isInWatchlist(data.id, mediaType) ? (
+                    <Button 
+                      variant="outlined" 
+                      startIcon={<RemoveIcon />}
+                      sx={{ borderRadius: 8 }}
+                      onClick={() => handleWatchlistAction('remove')}
+                    >
+                      Remove from Watchlist
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="outlined" 
+                      startIcon={<AddIcon />}
+                      sx={{ borderRadius: 8 }}
+                      onClick={() => handleWatchlistAction('add')}
+                    >
+                      Add to Watchlist
+                    </Button>
+                  )}
                 </Box>
 
                 {/* Overview */}
@@ -276,23 +304,23 @@ export default function MediaDetail({ data, mediaType, isLoading }: MediaDetailP
                   {/* Movie specific info */}
                   {isMovie(data) && (
                     <>
-                      {data.budget && data.budget > 0 && (
+                      {data.budget && data.budget > 0 ? (
                         <Grid item xs={12} sm={6} md={4}>
                           <Typography variant="subtitle2" color="text.secondary">Budget</Typography>
                           <Typography variant="body1">
                             ${data.budget.toLocaleString()}
                           </Typography>
                         </Grid>
-                      )}
+                      ) : null}
                       
-                      {data.revenue && data.revenue > 0 && (
+                      {data.revenue && data.revenue > 0 ? (
                         <Grid item xs={12} sm={6} md={4}>
                           <Typography variant="subtitle2" color="text.secondary">Revenue</Typography>
                           <Typography variant="body1">
                             ${data.revenue.toLocaleString()}
                           </Typography>
                         </Grid>
-                      )}
+                      ) : null}
                     </>
                   )}
 
@@ -333,6 +361,94 @@ export default function MediaDetail({ data, mediaType, isLoading }: MediaDetailP
           </Grid>
         </ContentContainer>
       </Container>
+      {/* Alert Snackbar */}
+      <Snackbar 
+        open={alertOpen} 
+        autoHideDuration={6000} 
+        onClose={() => setAlertOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setAlertOpen(false)} 
+          severity={alertSeverity} 
+          variant="filled" 
+          sx={{ width: '100%' }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
+
+      {/* Login Dialog */}
+      <Dialog
+        open={loginDialogOpen}
+        onClose={() => setLoginDialogOpen(false)}
+        PaperProps={{
+          sx: {
+            backgroundColor: '#1f1f1f',
+            color: '#fff',
+            borderRadius: 2
+          }
+        }}
+      >
+        <DialogTitle sx={{ color: '#E50914' }}>
+          Login Required
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ color: 'rgba(255,255,255,0.7)' }}>
+            You need to be logged in to add items to your watchlist.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button 
+            onClick={() => setLoginDialogOpen(false)} 
+            sx={{ color: '#fff' }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={() => {
+              setLoginDialogOpen(false);
+              router.push('/login');
+            }} 
+            variant="contained"
+            sx={{ 
+              backgroundColor: '#E50914',
+              '&:hover': {
+                backgroundColor: '#b2070f'
+              }
+            }}
+          >
+            Login
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
+
+  // Handle watchlist actions
+  function handleWatchlistAction(action: 'add' | 'remove') {
+    if (!isLoggedIn) {
+      setLoginDialogOpen(true);
+      return;
+    }
+
+    if (action === 'add') {
+      const success = addToWatchlist(data, mediaType);
+      if (success) {
+        setAlertMessage('Added to your watchlist');
+        setAlertSeverity('success');
+      } else {
+        setAlertMessage('Already in your watchlist');
+        setAlertSeverity('info');
+      }
+    } else {
+      const success = removeFromWatchlist(data.id, mediaType);
+      if (success) {
+        setAlertMessage('Removed from your watchlist');
+        setAlertSeverity('success');
+      }
+    }
+    
+    setAlertOpen(true);
+  }
 }

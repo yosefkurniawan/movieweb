@@ -398,7 +398,7 @@ export default function RegisterPage() {
         open={alertOpen} 
         autoHideDuration={6000} 
         onClose={handleCloseAlert}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert 
           onClose={handleCloseAlert} 
