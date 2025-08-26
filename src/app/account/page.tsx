@@ -1,6 +1,6 @@
  'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Container, 
   Box, 
@@ -15,23 +15,107 @@ import {
   Divider,
   Card,
   CardContent,
-  Button
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import WcIcon from '@mui/icons-material/Wc';
 import MovieIcon from '@mui/icons-material/Movie';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useRouter } from 'next/navigation';
 
-// Dummy user data
-const userData = {
-  fullName: 'John Doe',
-  email: 'john.doe@example.com',
-  gender: 'Male',
-  avatarUrl: 'https://i.pravatar.cc/300',
-};
+// User data interface
+interface UserData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  gender?: string;
+}
 
 export default function AccountPage() {
+  const router = useRouter();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>('success');
+
+  useEffect(() => {
+    // Check if user is logged in
+    const currentUser = localStorage.getItem('currentUser');
+    
+    if (currentUser) {
+      try {
+        const parsedUser = JSON.parse(currentUser);
+        setUserData(parsedUser);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        // Redirect to login if user data is invalid
+        router.push('/login');
+      }
+    } else {
+      // Redirect to login if no user is logged in
+      router.push('/login');
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    setLogoutDialogOpen(true);
+  };
+
+  const confirmLogout = () => {
+    // Remove user data from localStorage
+    localStorage.removeItem('currentUser');
+    
+    setLogoutDialogOpen(false);
+    showAlert('Logged out successfully', 'success');
+    
+    // Redirect to home page after a short delay
+    setTimeout(() => {
+      router.push('/login');
+    }, 1500);
+  };
+
+  const cancelLogout = () => {
+    setLogoutDialogOpen(false);
+  };
+
+  const showAlert = (message: string, severity: 'success' | 'error') => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertOpen(false);
+  };
+
+  // Show loading state while checking authentication
+  if (!userData) {
+    return (
+      <Box sx={{ 
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#141414'
+      }}>
+        <Typography variant="h5" sx={{ color: '#fff' }}>
+          Loading...
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ 
       minHeight: '100vh',
@@ -64,10 +148,13 @@ export default function AccountPage() {
                 mb: 3
               }}>
                 <Avatar 
-                  src={userData.avatarUrl} 
-                  alt={userData.fullName}
+                  src={`https://ui-avatars.com/api/?name=${userData.firstName}+${userData.lastName}&background=E50914&color=fff&size=200`}
+                  alt={`${userData.firstName} ${userData.lastName}`}
                   sx={{ width: 120, height: 120, mb: 2 }}
                 />
+                <Typography variant="h5" component="h2" sx={{ textAlign: 'center' }}>
+                  {userData.firstName} {userData.lastName}
+                </Typography>
               </Box>
 
               <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.1)', my: 2 }} />
@@ -79,7 +166,7 @@ export default function AccountPage() {
                   </ListItemIcon>
                   <ListItemText 
                     primary="Full Name" 
-                    secondary={userData.fullName} 
+                    secondary={`${userData.firstName} ${userData.lastName}`} 
                     secondaryTypographyProps={{ color: 'rgba(255,255,255,0.7)' }}
                   />
                 </ListItem>
@@ -93,30 +180,37 @@ export default function AccountPage() {
                     secondaryTypographyProps={{ color: 'rgba(255,255,255,0.7)' }}
                   />
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <WcIcon sx={{ color: '#E50914' }} />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary="Gender" 
-                    secondary={userData.gender}
-                    secondaryTypographyProps={{ color: 'rgba(255,255,255,0.7)' }}
-                  />
-                </ListItem>
+                {userData.gender && (
+                  <ListItem>
+                    <ListItemIcon>
+                      <WcIcon sx={{ color: '#E50914' }} />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Gender" 
+                      secondary={userData.gender}
+                      secondaryTypographyProps={{ color: 'rgba(255,255,255,0.7)' }}
+                    />
+                  </ListItem>
+                )}
               </List>
 
               <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
                 <Button 
-                  variant="contained" 
-                  color="primary"
+                  variant="outlined" 
+                  startIcon={<LogoutIcon />}
+                  onClick={handleLogout}
                   sx={{ 
-                    backgroundColor: '#E50914',
+                    borderColor: '#E50914',
+                    color: '#E50914',
+                    width: '100%',
+                    maxWidth: '200px',
                     '&:hover': {
-                      backgroundColor: '#b2070f'
+                      borderColor: '#b2070f',
+                      backgroundColor: 'rgba(229, 9, 20, 0.1)'
                     }
                   }}
                 >
-                  Edit Profile
+                  Logout
                 </Button>
               </Box>
             </Paper>
@@ -194,6 +288,65 @@ export default function AccountPage() {
           </Grid>
         </Grid>
       </Container>
+
+      {/* Logout Confirmation Dialog */}
+      <Dialog
+        open={logoutDialogOpen}
+        onClose={cancelLogout}
+        PaperProps={{
+          sx: {
+            backgroundColor: '#1f1f1f',
+            color: '#fff',
+            borderRadius: 2
+          }
+        }}
+      >
+        <DialogTitle sx={{ color: '#E50914' }}>
+          Confirm Logout
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ color: 'rgba(255,255,255,0.7)' }}>
+            Are you sure you want to log out of your account?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button 
+            onClick={cancelLogout} 
+            sx={{ color: '#fff' }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={confirmLogout} 
+            variant="contained"
+            sx={{ 
+              backgroundColor: '#E50914',
+              '&:hover': {
+                backgroundColor: '#b2070f'
+              }
+            }}
+          >
+            Logout
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Alert Snackbar */}
+      <Snackbar 
+        open={alertOpen} 
+        autoHideDuration={6000} 
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseAlert} 
+          severity={alertSeverity} 
+          variant="filled" 
+          sx={{ width: '100%' }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

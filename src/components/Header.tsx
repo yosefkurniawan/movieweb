@@ -87,7 +87,7 @@ export default function Header() {
   const [searchActive, setSearchActive] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -302,7 +302,7 @@ export default function Header() {
               {/* User - Hidden on small mobile and when search is active */}
               {!searchActive && (
                 <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}>
-                  <Link href="/" passHref>
+                  <Link href={currentUser ? '/account' : '/login'} passHref>
                     <IconButton size="large" aria-label="account of current user">
                       <AccountCircleOutlinedIcon sx={{ color: '#fff' }}/>
                     </IconButton>

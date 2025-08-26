@@ -81,7 +81,8 @@ export default function RegisterPage() {
     onSubmit: (values) => {
       try {
         // Get existing users or initialize empty array
-        const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        const usersJson = localStorage.getItem('users') || '[]';
+        const existingUsers = JSON.parse(usersJson);
         
         // Check if email already exists
         const emailExists = existingUsers.some((user: any) => user.email === values.email);
@@ -100,25 +101,31 @@ export default function RegisterPage() {
           createdAt: new Date().toISOString()
         };
         
-        // Save updated users array
-        localStorage.setItem('users', JSON.stringify([...existingUsers, newUser]));
-        
-        // Set current user
-        localStorage.setItem('currentUser', JSON.stringify({
-          id: newUser.id,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-          email: newUser.email
-        }));
-        
-        showAlert('Registration successful! Redirecting to account page...', 'success');
-        
-        formik.resetForm();
-        
-        // Redirect after a short delay to allow the user to see the success message
-        setTimeout(() => {
-          window.location.href = '/account';
-        }, 1500);
+        try {
+          // Save new user to local storage
+          localStorage.setItem('users', JSON.stringify([...existingUsers, newUser]));
+          
+          // Set current user to local storage
+          localStorage.setItem('currentUser', JSON.stringify({
+            id: newUser.id,
+            firstName: newUser.firstName,
+            lastName: newUser.lastName,
+            email: newUser.email,
+            gender: newUser.gender
+          }));
+          
+          showAlert('Registration successful! Redirecting to account page...', 'success');
+          
+          formik.resetForm();
+          
+          // Redirect after a short delay to allow the user to see the success message
+          setTimeout(() => {
+            window.location.href = '/account';
+          }, 1500);
+        } catch (storageError) {
+          console.error('Storage error:', storageError);
+          showAlert('An error occurred while saving your information. Please try again.', 'error');
+        }
       } catch (error) {
         console.error('Registration error:', error);
         showAlert('An error occurred during registration. Please try again.', 'error');

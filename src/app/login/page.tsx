@@ -55,7 +55,8 @@ export default function LoginPage() {
     onSubmit: (values) => {
       try {
         // Get users from local storage
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const usersJson = localStorage.getItem('users') || '[]';
+        const users = JSON.parse(usersJson);
         
         // Find user with matching email and password
         const user = users.find((u: any) => 
@@ -63,20 +64,26 @@ export default function LoginPage() {
         );
         
         if (user) {
-          // Store current user info (excluding sensitive data like password)
-          localStorage.setItem('currentUser', JSON.stringify({
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email
-          }));
-          
-          showAlert('Login successful! Redirecting to account page...', 'success');
-          
-          // Redirect to account page after a short delay
-          setTimeout(() => {
-            window.location.href = '/account';
-          }, 1500);
+          try {
+            // Set current user to local storage
+            localStorage.setItem('currentUser', JSON.stringify({
+              id: user.id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              email: user.email,
+              gender: user.gender
+            }));
+            
+            showAlert('Login successful! Redirecting to account page...', 'success');
+            
+            // Redirect to account page after a short delay
+            setTimeout(() => {
+              window.location.href = '/account';
+            }, 1500);
+          } catch (error) {
+            console.error('Error storing user data:', error);
+            showAlert('An error occurred during login. Please try again.', 'error');
+          }
         } else {
           // Show error for invalid credentials
           showAlert('Invalid email or password. Please try again.', 'error');
@@ -254,7 +261,8 @@ export default function LoginPage() {
         open={alertOpen} 
         autoHideDuration={6000} 
         onClose={handleCloseAlert}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        
       >
         <Alert 
           onClose={handleCloseAlert} 
