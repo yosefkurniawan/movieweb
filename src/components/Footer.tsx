@@ -16,7 +16,7 @@ export default function Footer() {
       }}
     >
       <Container maxWidth="xl">
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: { xs: 'start', md: 'center' }, flexDirection: { xs: 'column', sm: 'row' } }}>
           <Typography variant="body2">
             &copy; {new Date().getFullYear()} MovieWeb | Developed by 
           </Typography>
