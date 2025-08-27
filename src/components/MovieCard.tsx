@@ -118,7 +118,7 @@ export default function MovieCard({
       <StyledCard>
         <Box sx={{ position: 'relative' }}>
           {((!isLandscape && posterPath) || (isLandscape && backdrop_path)) ? (
-            <Box sx={{ position: 'relative', height: { xs: !isLandscape ? 350 : 250, md: !isLandscape ? 400 : 300 } }}>
+            <Box sx={{ position: 'relative', height: { xs: !isLandscape ? 300 : 250, sm: !isLandscape ? 350 : 250, md: !isLandscape ? 400 : 300 } }}>
               <Image
                 src={!isLandscape ? getImageUrl(posterPath!) : getImageUrl(backdrop_path!)}
                 alt={title}
@@ -129,7 +129,7 @@ export default function MovieCard({
               />
             </Box>
           ) : (
-            <Box sx={{ height: { xs: !isLandscape ? 350 : 250, md: !isLandscape ? 400 : 300 } }}>
+            <Box sx={{ height: { xs: !isLandscape ? 300 : 250, sm: !isLandscape ? 350 : 250, md: !isLandscape ? 400 : 300 } }}>
               <MoviePlaceholder isLandscape={isLandscape} mediaType={mediaType} />
             </Box>
           )}
@@ -175,7 +175,7 @@ export default function MovieCard({
               {overview}
             </Typography>
 
-            <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+            <Box sx={{ display: 'flex', gap: 1, mt: 2, flexDirection: { xs: isLandscape ? 'row' : 'column', md: 'row' } }}>
               <Button 
                 variant="contained" 
                 color="primary"

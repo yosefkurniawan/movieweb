@@ -54,14 +54,14 @@ export default function TVShowsPage() {
         <Grid container spacing={3}>
           {isLoading
             ? Array.from(new Array(20)).map((_, index) => (
-                <Grid item key={`skeleton-${index}`} xs={12} sm={6} md={3}>
+                <Grid item key={`skeleton-${index}`} xs={6} sm={4} md={3}>
                   <Box sx={{ height: '100%' }}>
                     <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 1 }} />
                   </Box>
                 </Grid>
               ))
             : data?.results.map((show) => (
-                <Grid item key={show.id} xs={12} sm={6} md={3}>
+                <Grid item key={show.id} xs={6} sm={4} md={3}>
                   <MovieCard
                     id={show.id}
                     title={(show as TVShowItem).name}

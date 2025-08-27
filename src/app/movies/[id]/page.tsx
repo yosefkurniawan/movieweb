@@ -32,15 +32,12 @@ export default function MovieDetailPage() {
         isLoading={isLoading}
       />
       
-      {/* Similar Movies Section */}
-      {movie?.similar && movie.similar.results.length > 0 && (
-        <RelatedMedia 
-          items={movie.similar.results} 
-          title="Similar Movies" 
-          mediaType="movie" 
-          isLoading={isLoading}
-        />
-      )}
+      <RelatedMedia 
+        items={movie?.similar?.results || []} 
+        title="Similar Movies" 
+        mediaType="movie" 
+        isLoading={isLoading}
+      />
     </Box>
   );
 }

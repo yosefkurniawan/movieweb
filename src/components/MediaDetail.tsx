@@ -59,7 +59,7 @@ const ContentContainer = styled(Box)(({ theme }) => `
   z-index: 2;
   margin-top: -150px;
   ${theme.breakpoints.down('md')} {
-    margin-top: -100px;
+    margin-top: -250px;
   }
 `);
 
@@ -70,7 +70,11 @@ const PosterContainer = styled(Box)(({ theme }) => `
   overflow: hidden;
   box-shadow: ${theme.shadows[8]};
   ${theme.breakpoints.down('md')} {
-    max-width: 200px;
+    max-width: 180px;
+  }
+  ${theme.breakpoints.down('sm')} {
+    max-width: 80%;
+    justify-self: center;
   }
 `);
 
@@ -129,10 +133,9 @@ export default function MediaDetail({ data, mediaType, isLoading }: MediaDetailP
     return (
       <>
         <Box sx={{ width: '100%', height: { xs: '50vh', md: '70vh' } }}>
-          <Skeleton variant="rectangular" width="100%" height="100%" />
         </Box>
         <Container maxWidth="xl">
-          <Grid container spacing={4} sx={{ mt: -8, position: 'relative', zIndex: 2 }}>
+          <Grid container spacing={4} sx={{ mt: -45, position: 'relative', zIndex: 2 }}>
             <Grid item xs={12} md={3}>
               <Skeleton variant="rectangular" width="100%" height={450} sx={{ borderRadius: 1 }} />
             </Grid>
@@ -277,7 +280,7 @@ export default function MediaDetail({ data, mediaType, isLoading }: MediaDetailP
                 )}
 
                 {/* Action buttons */}
-                <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+                <Box sx={{ display: 'flex', gap: 2, mb: 4, flexDirection: { xs: 'column', sm: 'row' } }}>
                   <Button 
                     variant="contained" 
                     color="primary" 
