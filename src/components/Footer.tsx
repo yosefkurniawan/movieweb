@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, Container, Typography } from '@mui/material';
+import Link from 'next/link';
 
 export default function Footer() {
   return (
@@ -14,11 +15,20 @@ export default function Footer() {
         color: 'grey.500',
       }}
     >
-      <Container maxWidth="lg">
-        <Box>
+      <Container maxWidth="xl">
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Typography variant="body2">
-            &copy; {new Date().getFullYear()} Film Favorit
+            &copy; {new Date().getFullYear()} MovieWeb | Developed by 
           </Typography>
+          <Link href="https://yosefkurniawan.dev/" target="_blank" passHref >
+            <Typography variant="body2" sx={{ 
+              ml: 0.5, 
+              color: '#fff',
+              '&:hover': {
+                color: '#E50914'
+              }
+            }}>Yosef Kurniawan</Typography>
+        </Link>
         </Box>
       </Container>
     </Box>
