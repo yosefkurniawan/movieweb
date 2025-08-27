@@ -16,7 +16,7 @@ import {
 import MovieIcon from '@mui/icons-material/Movie';
 import TvIcon from '@mui/icons-material/Tv';
 import { useSearch } from '@/lib/hooks/useSearch';
-import { MovieItem, TVShowItem } from '@/types/media';
+import { Movie, TVShow } from '@/types/media';
 import MovieCard from '@/components/MovieCard';
 
 export default function SearchClient() {
@@ -116,8 +116,8 @@ export default function SearchClient() {
           : data?.results.map((item) => {
               // Determine if it's a movie or TV show
               const isMovie = 'title' in item;
-              const title = isMovie ? (item as MovieItem).title : (item as TVShowItem).name;
-              const releaseDate = isMovie ? (item as MovieItem).release_date : (item as TVShowItem).first_air_date;
+              const title = isMovie ? (item as Movie).title : (item as TVShow).name;
+              const releaseDate = isMovie ? (item as Movie).release_date : (item as TVShow).first_air_date;
               const mediaType = item.media_type || (isMovie ? 'movie' : 'tv');
               
               return (
