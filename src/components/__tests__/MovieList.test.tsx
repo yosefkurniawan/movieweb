@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import MovieList from '../MovieList';
-import { MediaItem } from '@/lib/api/tmdb';
+import { MediaItem } from '@/types/media';
 
 // Define the props interface for MovieCard
 interface MovieCardProps {

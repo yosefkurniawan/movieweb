@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { usePopularTVShows } from '@/lib/hooks/useMovies';
 import MovieCard from '@/components/MovieCard';
-import { TVShowItem } from '@/types/media';
+import { TVShow } from '@/types/media';
 
 export default function TVShowsPage() {
   const [page, setPage] = useState(1);
@@ -64,10 +64,10 @@ export default function TVShowsPage() {
                 <Grid item key={show.id} xs={6} sm={4} md={3}>
                   <MovieCard
                     id={show.id}
-                    title={(show as TVShowItem).name}
+                    title={(show as TVShow).name}
                     posterPath={show.poster_path}
                     backdrop_path={show.backdrop_path}
-                    releaseDate={(show as TVShowItem).first_air_date}
+                    releaseDate={(show as TVShow).first_air_date}
                     voteAverage={show.vote_average}
                     overview={show.overview}
                     mediaType="tv"

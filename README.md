@@ -58,8 +58,8 @@ The application uses the TMDB API to fetch movie and TV show data. The API key i
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/MovieWeb.git
-   cd MovieWeb
+   git clone https://github.com/yosefkurniawan/movieweb.git
+   cd movieweb
    ```
 
 2. Install dependencies

@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
-import { Movie, TVShow, Genre } from '@/lib/api/tmdb';
+import { Movie, TVShow, Genre } from '@/types/media';
 import { getImageUrl } from '@/lib/api/tmdb';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import AddIcon from '@mui/icons-material/Add';

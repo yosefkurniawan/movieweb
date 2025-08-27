@@ -1,3 +1,11 @@
+import {
+  Movie,
+  TVShow,
+  MediaItem,
+  MovieDetails,
+  TVShowDetails
+} from '@/types/media';
+
 // TMDB API configuration
 const BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
@@ -8,113 +16,7 @@ const defaultHeaders = {
   'Authorization': `Bearer ${API_KEY}`
 };
 
-// Types for API responses
-export interface Genre {
-  id: number;
-  name: string;
-}
-
-export interface ProductionCompany {
-  id: number;
-  logo_path: string | null;
-  name: string;
-  origin_country: string;
-}
-
-export interface Video {
-  id: string;
-  key: string;
-  name: string;
-  site: string;
-  type: string;
-}
-
-export interface MovieDetails extends Movie {
-  similar?: {
-    results: Movie[];
-  };
-  videos?: {
-    results: Video[];
-  };
-}
-
-export interface Movie {
-  id: number;
-  title: string;
-  overview: string;
-  poster_path: string | null;
-  backdrop_path: string | null;
-  release_date: string;
-  vote_average: number;
-  vote_count: number;
-  genre_ids?: number[];
-  genres?: Genre[];
-  runtime?: number;
-  status?: string;
-  tagline?: string;
-  budget?: number;
-  revenue?: number;
-  production_companies?: ProductionCompany[];
-  media_type?: 'movie' | 'tv';
-}
-
-export interface Creator {
-  id: number;
-  name: string;
-  profile_path: string | null;
-}
-
-export interface Network {
-  id: number;
-  name: string;
-  logo_path: string | null;
-}
-
-export interface Season {
-  id: number;
-  name: string;
-  overview: string;
-  poster_path: string | null;
-  season_number: number;
-  episode_count: number;
-  air_date: string | null;
-}
-
-export interface TVShowDetails extends TVShow {
-  similar?: {
-    results: TVShow[];
-  };
-  videos?: {
-    results: Video[];
-  };
-}
-
-export interface TVShow {
-  id: number;
-  name: string;
-  overview: string;
-  poster_path: string | null;
-  backdrop_path: string | null;
-  first_air_date: string;
-  vote_average: number;
-  vote_count: number;
-  genre_ids?: number[];
-  genres?: Genre[];
-  number_of_seasons?: number;
-  number_of_episodes?: number;
-  episode_run_time?: number[];
-  status?: string;
-  tagline?: string;
-  created_by?: Creator[];
-  networks?: Network[];
-  seasons?: Season[];
-  in_production?: boolean;
-  last_air_date?: string;
-  media_type?: 'movie' | 'tv';
-}
-
-export type MediaItem = Movie | TVShow;
-
+// API response types
 export interface MovieResponse {
   page: number;
   results: Movie[];

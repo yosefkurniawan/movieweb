@@ -8,7 +8,7 @@ import {
   Skeleton
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Movie, TVShow } from '@/lib/api/tmdb';
+import { Movie, TVShow } from '@/types/media';
 import MovieCard from './MovieCard';
 
 const SectionTitle = styled(Typography)(({ theme }) => ({

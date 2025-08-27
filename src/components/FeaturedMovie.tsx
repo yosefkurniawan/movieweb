@@ -5,7 +5,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useFeaturedMovie } from '@/lib/hooks/useFeaturedMovie';
 import { getImageUrl } from '@/lib/api/tmdb';
-import { MediaItem, Movie, TVShow } from '@/lib/api/tmdb';
+import { MediaItem, Movie, TVShow } from '@/types/media';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 

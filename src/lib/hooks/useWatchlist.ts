@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Movie, TVShow } from '@/lib/api/tmdb';
+import { Movie, TVShow } from '@/types/media';
 
 // Define a type for watchlist items that can be either movies or TV shows
 export type WatchlistItem = {

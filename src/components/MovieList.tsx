@@ -13,7 +13,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MovieCard from './MovieCard';
-import { MediaItem, MovieItem, TVShowItem } from '@/types/media';
+import { MediaItem, Movie, TVShow } from '@/types/media';
 
 // Styled components
 const ScrollContainer = styled(Box)(({ theme }) => ({
@@ -73,12 +73,12 @@ interface MovieListProps {
 }
 
 // Type guard to check if an item is a Movie
-const isMovie = (item: MediaItem): item is MovieItem => {
+const isMovie = (item: MediaItem): item is Movie => {
   return 'title' in item && 'release_date' in item;
 };
 
 // Type guard to check if an item is a TVShow
-const isTVShow = (item: MediaItem): item is TVShowItem => {
+const isTVShow = (item: MediaItem): item is TVShow => {
   return 'name' in item && 'first_air_date' in item;
 };
 

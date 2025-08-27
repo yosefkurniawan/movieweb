@@ -8,10 +8,12 @@ import {
   TVShowResponse,
   fetchTopRatedMovies,
   fetchMovieDetails,
-  fetchTVShowDetails,
+  fetchTVShowDetails
+} from '@/lib/api/tmdb';
+import {
   MovieDetails,
   TVShowDetails
-} from '@/lib/api/tmdb';
+} from '@/types/media';
 
 export function useTrendingMovies(page = 1, timeWindow: 'day' | 'week' = 'week') {
   return useQuery<MovieResponse>({
