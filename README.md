@@ -35,8 +35,6 @@ The application uses the TMDB API to fetch movie and TV show data. The API key i
 - Responsive design for all screen sizes
 - Netflix-inspired dark theme
 - Material UI components for a modern look and feel
-- Loading states and error handling
-- Toast notifications for user actions
 
 ## Technologies Used
 
@@ -71,6 +69,7 @@ The application uses the TMDB API to fetch movie and TV show data. The API key i
    ```bash
    NEXT_PUBLIC_TMDB_API_KEY==eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MzA5YTY0ODAxYzgzMTM4Y2VhYmQzZGU3NjYyZGVmNiIsIm5iZiI6MTc1NjEyNjMwMi45NzUwMDAxLCJzdWIiOiI2OGFjNWM1ZWM5ODU2ZDExMmE5ZGI0NWIiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.9IoHI170Sy-lJIeF3b6dERKq-MW2HMwGbQ0PC4Da31A
    ```
+   For local, put the API key in the .env.local file.
 
 4. Run the development server
    ```bash
@@ -133,15 +132,3 @@ yarn test --coverage
   /types           # TypeScript type definitions
   /public          # Static assets
 ```
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
