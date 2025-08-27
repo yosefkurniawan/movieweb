@@ -67,12 +67,24 @@ The application uses the TMDB API to fetch movie and TV show data. The API key i
    yarn install
    ```
 
-3. Run the development server
+3. Set environment variables
+   ```bash
+   NEXT_PUBLIC_TMDB_API_KEY==eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MzA5YTY0ODAxYzgzMTM4Y2VhYmQzZGU3NjYyZGVmNiIsIm5iZiI6MTc1NjEyNjMwMi45NzUwMDAxLCJzdWIiOiI2OGFjNWM1ZWM5ODU2ZDExMmE5ZGI0NWIiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.9IoHI170Sy-lJIeF3b6dERKq-MW2HMwGbQ0PC4Da31A
+   ```
+
+4. Run the development server
    ```bash
    yarn dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application
+
+To run in production mode, use
+
+```bash
+yarn build
+yarn start
+```
 
 ## Testing
 
