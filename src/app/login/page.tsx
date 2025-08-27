@@ -240,18 +240,6 @@ export default function LoginPage() {
                   }}>Sign up now</Typography>
               </Link>
               </Box>
-              <Link href="#" passHref>
-                <Typography 
-                  sx={{ 
-                    color: '#b3b3b3',
-                    '&:hover': {
-                      color: '#fff'
-                    }
-                  }}
-                >
-                  Need help?
-                </Typography>
-              </Link>
             </Box>
           </Box>
         </Paper>
