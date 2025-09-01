@@ -67,7 +67,7 @@ The application uses the TMDB API to fetch movie and TV show data. The API key i
 
 3. Set environment variables
    ```bash
-   NEXT_PUBLIC_TMDB_API_KEY==eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MzA5YTY0ODAxYzgzMTM4Y2VhYmQzZGU3NjYyZGVmNiIsIm5iZiI6MTc1NjEyNjMwMi45NzUwMDAxLCJzdWIiOiI2OGFjNWM1ZWM5ODU2ZDExMmE5ZGI0NWIiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.9IoHI170Sy-lJIeF3b6dERKq-MW2HMwGbQ0PC4Da31A
+   NEXT_PUBLIC_TMDB_API_KEY==your_api_key
    ```
    For local, put the API key in the .env.local file.
 
